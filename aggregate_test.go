@@ -14,6 +14,8 @@ type Person struct {
 }
 
 func (p *Person) birth(n Name) {
+	// Enforce business invariants
+
 	p.ApplyNew(p, &Born{Name: n})
 }
 
@@ -34,7 +36,7 @@ func TestPersonBorn(t *testing.T) {
 	person := Person{}
 	person.birth("Pelle")
 	if person.Name != "Pelle" {
-		t.Fatal("The name is not correct")
+		t.Fatal("The name is not correct") //TODO: Is there a better way
 	}
 
 	if len(person.UncommittedEvents) != 1 {

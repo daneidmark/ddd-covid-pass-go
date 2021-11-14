@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -10,29 +12,23 @@ type PatientApi struct {
 	PatientStorer PatientStorer
 }
 
+type RegisterPatientCommand struct {
+	PersonalNumber string `json:"personal_number"	`
+}
+
 func (api *PatientApi) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	api.register("19571232-0066") //TODO: get from request
-}
-
-func (api *PatientApi) register(pn PersonalNumber) {
-	patient := Patient{}
-	patient.register(pn)
-	api.PatientStorer.Store(patient)
-}
-
-type InmemoryPatientReader struct {
-}
-
-func (r *InmemoryPatientReader) Find(pn PersonalNumber) Patient {
-	return Patient{PersonalNumber: "dsa"}
-}
-
-type InmemoryPatientStorer struct {
-}
-
-func (r *InmemoryPatientStorer) Store(p Patient) {
-	for _, e := range p.UncommittedEvents {
-		fmt.Printf("saving event: %v\n", e)
+	var cmd RegisterPatientCommand
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Missing body")
 	}
-	fmt.Printf("PersonalNumber: %v\n", p.PersonalNumber)
+
+	json.Unmarshal(reqBody, &cmd)
+	api.handle(cmd)
+}
+
+func (api *PatientApi) handle(cmd RegisterPatientCommand) {
+	patient := Patient{}
+	patient.register(PersonalNumber(cmd.PersonalNumber))
+	api.PatientStorer.Store(patient)
 }

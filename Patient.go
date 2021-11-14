@@ -23,12 +23,3 @@ func (patient *Patient) Transition(e Event) {
 type Registered struct {
 	PersonalNumber PersonalNumber
 }
-
-// Persistance
-type PatientReader interface {
-	Find(pn PersonalNumber) (p Patient)
-}
-
-type PatientStorer interface {
-	Store(p Patient)
-}
