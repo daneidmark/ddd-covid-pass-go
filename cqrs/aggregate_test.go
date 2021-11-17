@@ -1,4 +1,4 @@
-package main
+package cqrs
 
 import (
 	"reflect"
@@ -43,7 +43,7 @@ func TestPersonBorn(t *testing.T) {
 		t.Fatal("No events has been registered")
 	}
 
-	if reflect.TypeOf(person.UncommittedEvents[0].Data).String() != "*main.Born" {
+	if reflect.TypeOf(person.UncommittedEvents[0].Data).String() != "*cqrs.Born" {
 		t.Fatal("Born is not the first event " + reflect.TypeOf(person.UncommittedEvents[0].Data).String())
 	}
 }
