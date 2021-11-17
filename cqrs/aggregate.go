@@ -22,6 +22,10 @@ type Aggregate interface {
 	Transition(e Event)
 }
 
+func (ar *AggregateRoot) SetId(id AggregateId) {
+	ar.Id = id
+}
+
 func (ar *AggregateRoot) Apply(a Aggregate, e Event) {
 	a.Transition(e)
 	ar.Id = e.AggregateId

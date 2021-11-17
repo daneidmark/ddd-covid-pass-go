@@ -17,7 +17,6 @@ func NewService(r covid.PatientRepository) *service {
 }
 
 func (s *service) RegisterPatient(pn covid.PersonalNumber) {
-	patient := covid.Patient{}
-	patient.Register(pn)
+	patient := covid.NewPatient(pn)
 	s.r.Store(patient)
 }

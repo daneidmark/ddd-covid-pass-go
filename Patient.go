@@ -1,6 +1,8 @@
 package covid
 
-import "github.com/daneidmark/ddd-covid-pass-go/cqrs"
+import (
+	"github.com/daneidmark/ddd-covid-pass-go/cqrs"
+)
 
 // Domain entities
 type PersonalNumber string
@@ -8,6 +10,13 @@ type PersonalNumber string
 type Patient struct {
 	cqrs.AggregateRoot
 	PersonalNumber PersonalNumber
+}
+
+func NewPatient(pn PersonalNumber) Patient {
+	p := Patient{}
+	p.SetId(cqrs.AggregateId(pn))
+	p.Register(pn)
+	return p
 }
 
 func (p *Patient) Register(n PersonalNumber) {

@@ -9,19 +9,21 @@ import (
 )
 
 type patientRepository struct {
-	db   map[cqrs.AggregateId][]cqrs.Event
+	db   map[covid.PersonalNumber][]cqrs.Event
 	lock *sync.RWMutex
 }
 
 func NewPatientRepository() covid.PatientRepository {
-	return &patientRepository{}
+	return &patientRepository{db: map[covid.PersonalNumber][]cqrs.Event{}, lock: &sync.RWMutex{}}
 }
 
 func (c *patientRepository) Store(p covid.Patient) {
-	//c.lock.RLock()
-	//defer c.lock.RUnlock()
+	c.lock.RLock()
+	defer c.lock.RUnlock()
 
 	fmt.Printf("Storing Patient %s", p.PersonalNumber)
+	fmt.Printf("Storing Patient %+v\n", p.UncommittedEvents)
+
 	//TODO
 }
 
