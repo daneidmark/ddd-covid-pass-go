@@ -36,6 +36,6 @@ type Registered struct {
 }
 
 type PatientRepository interface {
-	Store(p Patient)
+	Store(p Patient) error
 	Find(pn PersonalNumber) Patient
 }
