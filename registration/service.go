@@ -6,6 +6,7 @@ import (
 
 type Service interface {
 	RegisterPatient(pn covid.PersonalNumber)
+	Vaccinate(pn covid.PersonalNumber, v covid.Vaccine)
 }
 
 type service struct {
@@ -19,4 +20,10 @@ func NewService(r covid.PatientRepository) Service {
 func (s *service) RegisterPatient(pn covid.PersonalNumber) {
 	patient := covid.NewPatient(pn)
 	s.r.Store(patient)
+}
+
+func (s *service) Vaccinate(pn covid.PersonalNumber, v covid.Vaccine) {
+	p := s.r.Find(pn)
+	p.Vaccinate(v)
+	s.r.Store(p)
 }
