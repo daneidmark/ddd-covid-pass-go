@@ -2,11 +2,11 @@ package inmemory
 
 import (
 	"errors"
-	"fmt"
 	"sync"
 
 	covid "github.com/daneidmark/ddd-covid-pass-go"
 	"github.com/daneidmark/ddd-covid-pass-go/cqrs"
+	"github.com/daneidmark/ddd-covid-pass-go/eventbus"
 )
 
 type eventStorage struct {
@@ -16,12 +16,13 @@ type eventStorage struct {
 }
 
 type patientRepository struct {
-	db   map[cqrs.AggregateId]eventStorage
-	lock *sync.RWMutex
+	db             map[cqrs.AggregateId]eventStorage
+	lock           *sync.RWMutex
+	eventPublisher eventbus.Service
 }
 
 func NewPatientRepository() covid.PatientRepository {
-	return &patientRepository{db: map[cqrs.AggregateId]eventStorage{}, lock: &sync.RWMutex{}}
+	return &patientRepository{db: map[cqrs.AggregateId]eventStorage{}, lock: &sync.RWMutex{}, eventPublisher: &eventbus.NoopService{}}
 }
 
 func (c *patientRepository) Store(p covid.Patient) error {
@@ -38,15 +39,14 @@ func (c *patientRepository) Store(p covid.Patient) error {
 		return errors.New("wrong version")
 	}
 
-	fmt.Printf("Storing Patient %s", p.PersonalNumber)
-	fmt.Printf("Storing Patient %+v\n", p.UncommittedEvents)
-
 	storage.CurrentVersion = p.Version
 	storage.Events = append(storage.Events, p.UncommittedEvents...)
 
-	c.db[p.Id] = storage
+	for _, e := range p.UncommittedEvents {
+		c.eventPublisher.Publish(e)
+	}
 
-	fmt.Printf("The db %+v\n", c.db)
+	c.db[p.Id] = storage
 
 	return nil
 }
