@@ -110,7 +110,7 @@ func TestSecondVaccinationWithDifferentTypesIsNotAllowed(t *testing.T) {
 
 func TestThirdVaccinationIsNotAllowed(t *testing.T) {
 
-	// Given Patient Registered and First Vaccinated
+	// Given Patient Registered and First Vaccinated and Second vaccination
 	e := []cqrs.Event{
 		{AggregateId: "123123-1323", Version: 1, Timestamp: time.Now(), Data: &Registered{PersonalNumber: "123123-1323"}},
 		{AggregateId: "123123-1323", Version: 2, Timestamp: time.Now(), Data: &FirstVaccineTaken{VaccineType: "Moderna", TimeTaken: time.Now()}},
