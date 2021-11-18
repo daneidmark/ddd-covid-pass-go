@@ -37,10 +37,10 @@ func (p *Patient) Register(n PersonalNumber) {
 func (p *Patient) Vaccinate(v Vaccine) error {
 	if p.FirstVaccine == (Vaccine{}) {
 		p.ApplyNew(p, &FirstVaccineTaken{VaccineType: v.VaccineType, TimeTaken: v.TimeTaken})
-	} else if p.SecondVaccine == (Vaccine{}) {
+	} else if p.SecondVaccine == (Vaccine{}) && p.FirstVaccine.VaccineType == v.VaccineType {
 		p.ApplyNew(p, &SecondVaccineTaken{VaccineType: v.VaccineType, TimeTaken: v.TimeTaken})
 	} else {
-		return errors.New("Patient is already double vaccinated")
+		return errors.New("Patient is not eligible for this vaccination")
 	}
 
 	return nil

@@ -85,3 +85,48 @@ func TestSecondVaccinationOfPatient(t *testing.T) {
 		t.Fatal("Registered is not the first event " + reflect.TypeOf(p.UncommittedEvents[0].Data).String())
 	}
 }
+
+func TestSecondVaccinationWithDifferentTypesIsNotAllowed(t *testing.T) {
+
+	// Given Patient Registered and First Vaccinated
+	e := []cqrs.Event{
+		{AggregateId: "123123-1323", Version: 1, Timestamp: time.Now(), Data: &Registered{PersonalNumber: "123123-1323"}},
+		{AggregateId: "123123-1323", Version: 2, Timestamp: time.Now(), Data: &FirstVaccineTaken{VaccineType: "Moderna", TimeTaken: time.Now()}},
+	}
+
+	p := Patient{}
+	p.BuildFromHistory(&p, e)
+
+	// When Vaccinate Patient
+
+	err := p.Vaccinate(Vaccine{VaccineType: "NOT_Moderna", TimeTaken: time.Now()})
+
+	// Then it breaks
+
+	if err == nil {
+		t.Fatal("The vaccination should not work") //TODO: Is there a better way
+	}
+}
+
+func TestThirdVaccinationIsNotAllowed(t *testing.T) {
+
+	// Given Patient Registered and First Vaccinated
+	e := []cqrs.Event{
+		{AggregateId: "123123-1323", Version: 1, Timestamp: time.Now(), Data: &Registered{PersonalNumber: "123123-1323"}},
+		{AggregateId: "123123-1323", Version: 2, Timestamp: time.Now(), Data: &FirstVaccineTaken{VaccineType: "Moderna", TimeTaken: time.Now()}},
+		{AggregateId: "123123-1323", Version: 3, Timestamp: time.Now(), Data: &SecondVaccineTaken{VaccineType: "Moderna", TimeTaken: time.Now()}},
+	}
+
+	p := Patient{}
+	p.BuildFromHistory(&p, e)
+
+	// When Vaccinate Patient
+
+	err := p.Vaccinate(Vaccine{VaccineType: "Moderna", TimeTaken: time.Now()})
+
+	// Then it breaks
+
+	if err == nil {
+		t.Fatal("The vaccination should not work") //TODO: Is there a better way
+	}
+}
