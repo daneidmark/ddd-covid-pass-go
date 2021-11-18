@@ -1,4 +1,4 @@
-package registration
+package vaccination
 
 import (
 	covid "github.com/daneidmark/ddd-covid-pass-go"

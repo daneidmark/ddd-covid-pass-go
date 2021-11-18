@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/daneidmark/ddd-covid-pass-go/inmemory"
-	"github.com/daneidmark/ddd-covid-pass-go/registration"
 	"github.com/daneidmark/ddd-covid-pass-go/server"
+	"github.com/daneidmark/ddd-covid-pass-go/vaccination"
 
 	"github.com/gorilla/mux"
 )
@@ -13,7 +13,7 @@ import (
 func main() {
 	router := mux.NewRouter()
 
-	router.Handle("/covid-pass/patient/register", server.NewRegistrationHandler(registration.NewService(inmemory.NewPatientRepository())))
+	router.Handle("/covid-pass/patient/register", server.NewRegistrationHandler(vaccination.NewService(inmemory.NewPatientRepository())))
 	//start and listen to requests
 	http.ListenAndServe(":8080", router)
 }

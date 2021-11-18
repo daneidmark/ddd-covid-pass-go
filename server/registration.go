@@ -7,14 +7,14 @@ import (
 	"net/http"
 
 	covid "github.com/daneidmark/ddd-covid-pass-go"
-	"github.com/daneidmark/ddd-covid-pass-go/registration"
+	"github.com/daneidmark/ddd-covid-pass-go/vaccination"
 )
 
 type registrationHandler struct {
-	s registration.Service
+	s vaccination.Service
 }
 
-func NewRegistrationHandler(s registration.Service) *registrationHandler {
+func NewRegistrationHandler(s vaccination.Service) *registrationHandler {
 	return &registrationHandler{s: s}
 }
 
