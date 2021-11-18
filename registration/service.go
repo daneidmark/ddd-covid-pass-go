@@ -12,7 +12,7 @@ type service struct {
 	r covid.PatientRepository
 }
 
-func NewService(r covid.PatientRepository) *service {
+func NewService(r covid.PatientRepository) Service {
 	return &service{r: r}
 }
 

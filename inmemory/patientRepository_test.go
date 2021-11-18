@@ -8,7 +8,6 @@ import (
 
 func TestCanSavePatients(t *testing.T) {
 	p := covid.NewPatient(covid.PersonalNumber("123123-3232"))
-
 	repo := NewPatientRepository()
 
 	repo.Store(p)
