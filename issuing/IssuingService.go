@@ -29,10 +29,16 @@ func handleEvent(event cqrs.Event) {
 	fmt.Printf("Envelope: %v; DataEvent: %v\n", event, event.Data)
 	switch event.Data.(type) {
 	case *covid.Registered:
-		fmt.Println("Should create non elibible covid pass")
-	case *covid.FirstVaccineTaken:
-		fmt.Println("Should do nothing on first vaccination")
+		createCovidPass(covid.PatientReference(event.AggregateId))
 	case *covid.SecondVaccineTaken:
-		fmt.Println("Should create mark covid pass ass elibible on second vaccination")
+		markAsEligible(covid.PatientReference(event.AggregateId))
 	}
+}
+
+func createCovidPass(ref covid.PatientReference) {
+	fmt.Println("Should create non elibible covid pass")
+}
+
+func markAsEligible(ref covid.PatientReference) {
+	fmt.Println("Should create mark covid pass ass elibible on second vaccination")
 }
