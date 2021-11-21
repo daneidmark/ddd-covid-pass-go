@@ -21,8 +21,8 @@ type patientRepository struct {
 	eventPublisher eventbus.Service
 }
 
-func NewPatientRepository() covid.PatientRepository {
-	return &patientRepository{db: map[cqrs.AggregateId]eventStorage{}, lock: &sync.RWMutex{}, eventPublisher: &eventbus.NoopService{}}
+func NewPatientRepository(eb eventbus.Service) covid.PatientRepository {
+	return &patientRepository{db: map[cqrs.AggregateId]eventStorage{}, lock: &sync.RWMutex{}, eventPublisher: eb}
 }
 
 func (c *patientRepository) Store(p covid.Patient) error {
@@ -43,7 +43,7 @@ func (c *patientRepository) Store(p covid.Patient) error {
 	storage.Events = append(storage.Events, p.UncommittedEvents...)
 
 	for _, e := range p.UncommittedEvents {
-		c.eventPublisher.Publish(e)
+		c.eventPublisher.Publish(eventbus.Topic("topic"), e)
 	}
 
 	c.db[p.Id] = storage
