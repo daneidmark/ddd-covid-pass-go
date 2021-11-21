@@ -1,8 +1,6 @@
 package issuing
 
 import (
-	"fmt"
-
 	covid "github.com/daneidmark/ddd-covid-pass-go"
 	"github.com/daneidmark/ddd-covid-pass-go/cqrs"
 	"github.com/daneidmark/ddd-covid-pass-go/eventbus"
@@ -30,7 +28,6 @@ func (i *Saga) Consume() {
 }
 
 func (e *Saga) handleEvent(event cqrs.Event) {
-	fmt.Printf("Envelope: %v; DataEvent: %v\n", event, event.Data)
 	switch event.Data.(type) {
 	case *covid.Registered:
 		e.createCovidPass(covid.PersonalNumber(event.AggregateId))
