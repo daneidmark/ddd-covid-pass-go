@@ -3,6 +3,7 @@ package issuing
 import (
 	"fmt"
 
+	covid "github.com/daneidmark/ddd-covid-pass-go"
 	"github.com/daneidmark/ddd-covid-pass-go/cqrs"
 	"github.com/daneidmark/ddd-covid-pass-go/eventbus"
 )
@@ -16,18 +17,22 @@ func (e *IssuingEventHandler) Register(bus *eventbus.InMemEventBus) {
 }
 
 func (e *IssuingEventHandler) Consume() {
-	fmt.Println("Before")
 	for {
 		select {
 		case d := <-e.Eh:
-			go printDataEvent("ch1", d)
+			go handleEvent(d)
 		}
 	}
-	fmt.Println("After")
-
-
 }
 
-func printDataEvent(ch string, data cqrs.Event) {
-	fmt.Printf("Channel: %s; Envelope: %v; DataEvent: %v\n", ch, data, data.Data)
+func handleEvent(event cqrs.Event) {
+	fmt.Printf("Envelope: %v; DataEvent: %v\n", event, event.Data)
+	switch event.Data.(type) {
+	case *covid.Registered:
+		fmt.Println("Should create non elibible covid pass")
+	case *covid.FirstVaccineTaken:
+		fmt.Println("Should do nothing on first vaccination")
+	case *covid.SecondVaccineTaken:
+		fmt.Println("Should create mark covid pass ass elibible on second vaccination")
+	}
 }

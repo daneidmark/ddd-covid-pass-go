@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/daneidmark/ddd-covid-pass-go/cqrs"
@@ -22,9 +21,10 @@ func main() {
 	i := issuing.IssuingEventHandler{Eh: make(chan cqrs.Event)}
 	i.Register(&eb)
 	go i.Consume()
-	
-	fmt.Println("hej")
-	router.Handle("/covid-pass/patient/register", server.NewRegistrationHandler(vaccination.NewService(inmemory.NewPatientRepository(&eb))))
+
+	s := vaccination.NewService(inmemory.NewPatientRepository(&eb))
+	router.Handle("/covid-pass/patient/register", server.NewRegistrationHandler(s))
+	router.Handle("/covid-pass/patient/vaccinate", server.NewVaccinationHandler(s))
 	//start and listen to requests
 	http.ListenAndServe(":8080", router)
 }
