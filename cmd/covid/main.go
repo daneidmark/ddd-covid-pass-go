@@ -19,7 +19,7 @@ func main() {
 
 	eb := eventbus.InMemEventBus{Subscribers: map[eventbus.Topic][]eventbus.EventHandler{}}
 
-	i := issuing.IssuingSaga{Service: issuing.Service{Repo: inmemory.NewCovidPassRepository(&eventbus.NoopService{})}, Repo: inmemory.IssuingSagaRepository{DB: map[covid.PatientReference]covid.CovidPassId{}}, EventHandler: make(chan cqrs.Event)}
+	i := issuing.Saga{Service: issuing.Service{Repo: inmemory.NewCovidPassRepository(&eventbus.NoopService{})}, Repo: inmemory.IssuingSagaRepository{DB: map[covid.PatientReference]covid.CovidPassId{}}, EventHandler: make(chan cqrs.Event)}
 	i.Register(&eb)
 	go i.Consume()
 
