@@ -8,15 +8,15 @@ import (
 	"github.com/daneidmark/ddd-covid-pass-go/eventbus"
 )
 
-type IssuingEventHandler struct {
+type IssuingSaga struct {
 	Eh eventbus.EventHandler
 }
 
-func (e *IssuingEventHandler) Register(bus *eventbus.InMemEventBus) {
+func (e *IssuingSaga) Register(bus *eventbus.InMemEventBus) {
 	bus.Subscribe("topic", e.Eh)
 }
 
-func (e *IssuingEventHandler) Consume() {
+func (e *IssuingSaga) Consume() {
 	for {
 		select {
 		case d := <-e.Eh:

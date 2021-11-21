@@ -5,6 +5,7 @@ import (
 	"time"
 
 	covid "github.com/daneidmark/ddd-covid-pass-go"
+	"github.com/daneidmark/ddd-covid-pass-go/eventbus"
 	"github.com/daneidmark/ddd-covid-pass-go/inmemory"
 )
 
@@ -14,7 +15,7 @@ import (
 
 func TestRegisterPatient(t *testing.T) {
 
-	r := inmemory.NewPatientRepository()
+	r := inmemory.NewPatientRepository(&eventbus.NoopService{})
 	s := NewService(r)
 
 	s.RegisterPatient("123123-1233")
@@ -28,7 +29,7 @@ func TestRegisterPatient(t *testing.T) {
 
 func TestFirstVaccinationOfPatient(t *testing.T) {
 
-	r := inmemory.NewPatientRepository()
+	r := inmemory.NewPatientRepository(&eventbus.NoopService{})
 	s := NewService(r)
 
 	s.RegisterPatient("123123-1233")
@@ -43,7 +44,7 @@ func TestFirstVaccinationOfPatient(t *testing.T) {
 
 func TestSecondVaccinationOfPatient(t *testing.T) {
 
-	r := inmemory.NewPatientRepository()
+	r := inmemory.NewPatientRepository(&eventbus.NoopService{})
 	s := NewService(r)
 
 	s.RegisterPatient("123123-1233")

@@ -18,7 +18,7 @@ func main() {
 
 	eb := eventbus.InMemEventBus{Subscribers: map[eventbus.Topic][]eventbus.EventHandler{}}
 
-	i := issuing.IssuingEventHandler{Eh: make(chan cqrs.Event)}
+	i := issuing.IssuingSaga{Eh: make(chan cqrs.Event)}
 	i.Register(&eb)
 	go i.Consume()
 
