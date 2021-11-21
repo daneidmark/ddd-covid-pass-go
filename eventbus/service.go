@@ -15,7 +15,7 @@ type NoopService struct {
 }
 
 func (*NoopService) Publish(t Topic, e cqrs.Event) {
-	fmt.Printf("Publishing %+v\n", e)
+	fmt.Printf("Publishing %+v %+v\n", e, e.Data)
 }
 
 type EventHandler chan cqrs.Event
@@ -23,7 +23,7 @@ type Topic string
 
 type InMemEventBus struct {
 	Subscribers map[Topic][]EventHandler
-	rm sync.RWMutex
+	rm          sync.RWMutex
 }
 
 func (eb *InMemEventBus) Subscribe(t Topic, eh EventHandler) {
