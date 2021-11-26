@@ -2,10 +2,10 @@ package inmemory
 
 import (
 	"testing"
-	"time"
 
 	covid "github.com/daneidmark/ddd-covid-pass-go"
 	"github.com/daneidmark/ddd-covid-pass-go/eventbus"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCanSavePatients(t *testing.T) {
@@ -15,9 +15,6 @@ func TestCanSavePatients(t *testing.T) {
 
 	repo.Store(p)
 
-	time.Sleep(1000000)
 	p1 := repo.Find(p.PersonalNumber)
-	if p1.PersonalNumber != p.PersonalNumber {
-		t.Fatal("The storage is not correct") //TODO: Is there a better way
-	}
+	assert.Equal(t, p1.PersonalNumber, p.PersonalNumber)
 }
