@@ -27,16 +27,19 @@ type InMemEventBus struct {
 }
 
 func (eb *InMemEventBus) Subscribe(t Topic, eh EventHandler) {
+	eb.rm.Lock()
+	defer eb.rm.Unlock()
+
 	eb.Subscribers[t] = append(eb.Subscribers[t], eh)
 }
 
 func (eb *InMemEventBus) Publish(t Topic, e cqrs.Event) {
 	eb.rm.RLock()
+	defer eb.rm.RUnlock()
 	s := eb.Subscribers[t]
 	go func(event cqrs.Event, handlers []EventHandler) {
 		for _, eh := range handlers {
 			eh <- e
 		}
 	}(e, s)
-	eb.rm.RUnlock()
 }
