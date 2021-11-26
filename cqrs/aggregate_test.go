@@ -3,6 +3,8 @@ package cqrs
 import (
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // Implement test Aggregate
@@ -35,15 +37,7 @@ type Born struct {
 func TestPersonBorn(t *testing.T) {
 	person := Person{}
 	person.birth("Pelle")
-	if person.Name != "Pelle" {
-		t.Fatal("The name is not correct") //TODO: Is there a better way
-	}
-
-	if len(person.UncommittedEvents) != 1 {
-		t.Fatal("No events has been registered")
-	}
-
-	if reflect.TypeOf(person.UncommittedEvents[0].Data).String() != "*cqrs.Born" {
-		t.Fatal("Born is not the first event " + reflect.TypeOf(person.UncommittedEvents[0].Data).String())
-	}
+	assert.Equal(t, person.Name, Name("Pelle"))
+	assert.Equal(t, len(person.UncommittedEvents), 1)
+	assert.Equal(t, reflect.TypeOf(person.UncommittedEvents[0].Data).String(), "*cqrs.Born")
 }
