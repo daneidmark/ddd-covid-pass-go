@@ -1,38 +1,65 @@
 package vaccination
 
 import (
+	"reflect"
 	"testing"
 	"time"
 
 	covid "github.com/daneidmark/ddd-covid-pass-go"
+	"github.com/daneidmark/ddd-covid-pass-go/cqrs"
 	"github.com/daneidmark/ddd-covid-pass-go/eventbus"
 	"github.com/daneidmark/ddd-covid-pass-go/inmemory"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
-// Implement test Aggregate
+type MockedEventBus struct {
+	mock.Mock
+}
 
-// tests
+func (m *MockedEventBus) Publish(t eventbus.Topic, e cqrs.Event) {
+	m.Called(t, e)
+}
 
 func TestRegisterPatient(t *testing.T) {
+	eb := new(MockedEventBus)
+	samePersonalNumber := func(e cqrs.Event) bool {
+		assert.Equal(t, reflect.TypeOf(e.Data).String(), "*covid.Registered")
+		d := e.Data.(*covid.Registered)
+		assert.Equal(t, d.PersonalNumber, covid.PersonalNumber("123123-1233"))
+		return true
+	}
 
-	r := inmemory.NewPatientRepository(&eventbus.NoopService{})
+	eb.On("Publish", eventbus.Topic("topic"), mock.MatchedBy(samePersonalNumber))
+
+	r := inmemory.NewPatientRepository(eb)
 	s := NewService(r)
 
 	s.RegisterPatient("123123-1233")
 
 	p := r.Find("123123-1233")
+	assert.NotNil(t, p)
 
-	if p.PersonalNumber != "123123-1233" {
-		t.Fatal("The personal number is not correct") //TODO: Is there a better way
-	}
+	eb.AssertExpectations(t)
 }
 
 func TestFirstVaccinationOfPatient(t *testing.T) {
+	/*eb := new(MockedEventBus)
+	correctVaccineType := func(e cqrs.Event) bool {
+		assert.Equal(t, reflect.TypeOf(e.Data).String(), "*covid.FirstVaccineTaken")
+		d := e.Data.(*covid.FirstVaccineTaken)
+		assert.Equal(t, d.VaccineType, covid.VaccineType("Moderna"))
+		return true
+	}
+
+	eb.On("Publish", eventbus.Topic("topic"), mock.MatchedBy(correctVaccineType))
+	*/
 
 	r := inmemory.NewPatientRepository(&eventbus.NoopService{})
 	s := NewService(r)
 
 	s.RegisterPatient("123123-1233")
+
 	s.Vaccinate("123123-1233", covid.Vaccine{VaccineType: "Moderna", TimeTaken: time.Now()})
 
 	p := r.Find("123123-1233")
